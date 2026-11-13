@@ -1,0 +1,6 @@
+{
+  "name": "BrewDesk POS",
+  "description": "Cloud-synced cafe billing, table management, KOT kitchen display, inventory, and GST reporting POS.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
