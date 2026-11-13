@@ -21,11 +21,11 @@ import type {
   UserPublic,
 } from '../shared/types';
 import { formatCurrency } from '../shared/calculations';
-import { getStoredToken } from '../services/posClient';
+import { apiUrl, getStoredToken } from '../services/posClient';
 import { exportExpensesCsv, exportSalesCsv } from '../utils/exportUtils';
 
 interface SettingsAndAuditViewProps {
-  storageMode: 'mongodb' | 'local-persistent';
+  storageMode: 'mongodb' | 'cloudflare-d1' | 'local-persistent';
   settings: CafeSettings;
   menu: MenuItem[];
   inventory: Ingredient[];
@@ -174,7 +174,9 @@ export const SettingsAndAuditView: React.FC<SettingsAndAuditViewProps> = ({
 
   const handleDownloadBackup = async (backupId?: string) => {
     const token = getStoredToken();
-    const url = backupId ? `/api/backups/export?id=${encodeURIComponent(backupId)}` : '/api/backups/export';
+    const url = apiUrl(
+      backupId ? `/api/backups/export?id=${encodeURIComponent(backupId)}` : '/api/backups/export'
+    );
     const res = await fetch(url, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
@@ -242,7 +244,12 @@ export const SettingsAndAuditView: React.FC<SettingsAndAuditViewProps> = ({
 
         <div className="text-xs text-slate-500 flex items-center gap-1.5">
           <Database className="w-3.5 h-3.5" />
-          Storage: {storageMode === 'mongodb' ? 'Cloud MongoDB' : 'Durable Server Store'}
+          Storage:{' '}
+          {storageMode === 'cloudflare-d1'
+            ? 'Cloudflare D1 + R2'
+            : storageMode === 'mongodb'
+              ? 'Cloud MongoDB'
+              : 'Durable Server Store'}
         </div>
       </div>
 

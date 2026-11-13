@@ -1,0 +1,33 @@
+name = "brewdesk-pos-worker"
+main = "worker/index.ts"
+compatibility_date = "2026-03-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+# Comma-separated allowed frontend origins (e.g. "https://pos.yourdomain.com,https://brewdesk-pos.pages.dev")
+ALLOWED_ORIGINS = "*"
+
+# Cloudflare D1 relational database binding
+[[d1_databases]]
+binding = "DB"
+database_name = "brewdesk-pos-db"
+database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+migrations_dir = "migrations"
+
+# Cloudflare R2 bucket binding for daily automatic & manual JSON backups
+[[r2_buckets]]
+binding = "BACKUPS_BUCKET"
+bucket_name = "brewdesk-pos-backups"
+
+# Durable Object hub for single-writer concurrency control & real-time WebSockets
+[[durable_objects.bindings]]
+name = "POS_HUB"
+class_name = "PosRealtimeHub"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["PosRealtimeHub"]
+
+# Automatic daily database backup to Cloudflare R2 at 02:00 UTC
+[triggers]
+crons = ["0 2 * * *"]

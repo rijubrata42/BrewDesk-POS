@@ -23,6 +23,7 @@ import {
   clearAuthSession,
   getStoredToken,
   getStoredUser,
+  getWsUrl,
   isNetworkError,
   loadCachedState,
   loadOfflineQueue,
@@ -179,8 +180,7 @@ export default function App() {
     let disposed = false;
     const connectWs = () => {
       if (disposed || !getStoredToken()) return;
-      const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      const wsUrl = `${proto}//${window.location.host}/ws?token=${encodeURIComponent(token)}`;
+      const wsUrl = getWsUrl(token);
       const ws = new WebSocket(wsUrl);
       wsRef.current = ws;
 

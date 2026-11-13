@@ -9,7 +9,12 @@
     "build": "vite build",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "cf:typecheck": "tsc -p worker/tsconfig.json --noEmit",
+    "cf:d1:migrate:local": "npx wrangler d1 migrations apply brewdesk-pos-db --local",
+    "cf:d1:migrate:remote": "npx wrangler d1 migrations apply brewdesk-pos-db --remote",
+    "cf:deploy:worker": "npx wrangler deploy",
+    "cf:deploy:pages": "npm run build && npx wrangler pages deploy dist --project-name brewdesk-pos"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",
@@ -34,6 +39,8 @@
     "ws": "^8.23.0"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261113.1",
+    "@types/express": "^4.17.21",
     "@types/node": "^22.14.0",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
@@ -41,7 +48,6 @@
     "esbuild": "^0.25.0",
     "tailwindcss": "^4.3.3",
     "tsx": "^4.21.0",
-    "typescript": "^7.0.2",
-    "@types/express": "^4.17.21"
+    "typescript": "^7.0.2"
   }
 }

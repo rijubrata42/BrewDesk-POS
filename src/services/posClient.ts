@@ -75,6 +75,33 @@ export function saveOfflineQueue(queue: QueuedMutation[]): void {
   }
 }
 
+const API_BASE = ((import.meta as unknown as { env?: Record<string, string | undefined> }).env?.VITE_API_BASE_URL || '')
+  .trim()
+  .replace(/\/+$/, '');
+
+const WS_BASE = ((import.meta as unknown as { env?: Record<string, string | undefined> }).env?.VITE_WS_BASE_URL || '')
+  .trim()
+  .replace(/\/+$/, '');
+
+export function apiUrl(path: string): string {
+  if (/^https?:\/\//i.test(path)) return path;
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  return API_BASE ? `${API_BASE}${cleanPath}` : cleanPath;
+}
+
+export function getWsUrl(token: string): string {
+  const encoded = encodeURIComponent(token);
+  if (WS_BASE) {
+    return `${WS_BASE}/ws?token=${encoded}`;
+  }
+  if (API_BASE && /^https?:\/\//i.test(API_BASE)) {
+    const wsOrigin = API_BASE.replace(/^http/i, 'ws');
+    return `${wsOrigin}/ws?token=${encoded}`;
+  }
+  const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  return `${proto}//${window.location.host}/ws?token=${encoded}`;
+}
+
 export async function apiRequest<T>(
   method: 'GET' | 'POST' | 'PATCH' | 'DELETE',
   path: string,
@@ -86,7 +113,7 @@ export async function apiRequest<T>(
   };
   if (token) headers.Authorization = `Bearer ${token}`;
 
-  const res = await fetch(path, {
+  const res = await fetch(apiUrl(path), {
     method,
     headers,
     body: body !== undefined ? JSON.stringify(body) : undefined,

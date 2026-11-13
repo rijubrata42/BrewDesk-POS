@@ -218,6 +218,7 @@ export interface BackupMetadata {
   dateKey: string;
   type: 'auto' | 'manual';
   sizeBytes: number;
+  r2Key?: string;
   counts: {
     orders: number;
     bills: number;
@@ -228,7 +229,7 @@ export interface BackupMetadata {
 }
 
 export interface PosStateSnapshot {
-  storageMode: 'mongodb' | 'local-persistent';
+  storageMode: 'mongodb' | 'cloudflare-d1' | 'local-persistent';
   settings: CafeSettings;
   menu: MenuItem[];
   tables: TableInfo[];
